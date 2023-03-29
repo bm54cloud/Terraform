@@ -28,14 +28,14 @@ resource "aws_instance" "instance1" {
   user_data_replace_on_change = true
 }
 
-#Create security group for ports 22 and 8080
+#Create security group 
 resource "aws_security_group" "jenkins_sg" {
   name        = "jenkins_sg"
-  description = "Open ports 22 and 8080"
+  description = "Open ports 22, 8080, and 443"
 
-  #Allow incoming TCP requests on port 22 from local IP
+  #Allow incoming TCP requests on port 22 from any IP
   ingress {
-    description = "SSH from local"
+    description = "Incoming SSH"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -47,6 +47,15 @@ resource "aws_security_group" "jenkins_sg" {
     description = "Incoming 8080"
     from_port   = 8080
     to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  #Allow incoming TCP requests on port 443 from any IP
+  ingress {
+    description = "Incoming 443"
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -65,7 +74,7 @@ resource "aws_security_group" "jenkins_sg" {
 }
 
 #Create S3 bucket for Jenkins artifacts
-resource "aws_s3_bucket" "jenkins-artifacts5847" {
+resource "aws_s3_bucket" "jenkins-artifacts" {
   bucket = "jenkins-artifacts-${random_id.randomness.hex}"
 
   tags = {
@@ -75,7 +84,7 @@ resource "aws_s3_bucket" "jenkins-artifacts5847" {
 
 #Make S3 bucket private
 resource "aws_s3_bucket_acl" "private_bucket" {
-  bucket = aws_s3_bucket.jenkins-artifacts5847.id
+  bucket = aws_s3_bucket.jenkins-artifacts.id
   acl    = "private"
 }
 
