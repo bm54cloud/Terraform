@@ -39,7 +39,7 @@ resource "aws_security_group" "jenkins_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["67.173.234.137/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   #Allow incoming TCP requests on port 8080 from any IP
